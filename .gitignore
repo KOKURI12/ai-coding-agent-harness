@@ -1,0 +1,26 @@
+﻿# secrets
+.env
+.env.*
+*.pem
+*.key
+secrets/
+credentials/
+
+# logs
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# node / build outputs
+node_modules/
+dist/
+build/
+coverage/
+
+# backup files
+*.bak
+*.bak_*
