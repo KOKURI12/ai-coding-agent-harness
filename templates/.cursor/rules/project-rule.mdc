@@ -1,5 +1,5 @@
 ---
-description: Common project rules for AI coding
+description: Common project rules for AI coding agents
 alwaysApply: true
 ---
 
@@ -7,25 +7,28 @@ alwaysApply: true
 
 回答は日本語で行ってください。
 
+## 作業開始時の確認
+
+作業を始める前に、以下のファイルを必ず確認してください。
+
+1. `AGENTS.md` — 禁止操作・セキュリティルール
+2. `PROJECT_CONTEXT.md` — このプロジェクト固有の情報
+
 ## 作業方針
 
-- 作業前に PROJECT_CONTEXT.md を確認してください。
 - 変更前に作業方針を簡潔に説明してください。
 - 依頼内容に関係するファイルだけを修正してください。
-- 大きなリファクタリングは勝手に行わないでください。
+- 大きなリファクタリングは事前確認なしに行わないでください。
 - 既存機能を壊さないことを優先してください。
+- 新しい依存パッケージの追加は必ず事前確認してください。
 
 ## セキュリティ
 
 - `.env`、秘密鍵、AWS 認証情報は読まない・出力しない・変更しないでください。
-- AWS リソースを変更するコマンドは勝手に実行しないでください。
-- 新しい依存パッケージを追加する場合は事前確認してください。
+- AWS リソースを変更するコマンドは事前確認なしに実行しないでください。
+- 本番環境（prd）への変更・デプロイは禁止です。
 
 ## 確認
 
-修正後、可能であれば以下を確認してください。
-
-- npm run lint
-- npm test
-- npm run build
-- git diff
+修正後、`PROJECT_CONTEXT.md` に記載のコマンドで動作確認をしてください。
+（例：lint / test / build / git diff）
