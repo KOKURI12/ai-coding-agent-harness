@@ -82,7 +82,7 @@ ai-coding-agent-harness/
 
 ```powershell
 git clone https://github.com/KOKURI12/ai-coding-agent-harness.git
-cd common-harness
+cd ai-coding-agent-harness
 ```
 
 > `templates/` に全ファイルが揃っています。手動でファイルを作成する必要はありません。
@@ -381,7 +381,7 @@ ai-coding-agent-harness/
 
 ```powershell
 git clone https://github.com/KOKURI12/ai-coding-agent-harness.git
-cd common-harness
+cd ai-coding-agent-harness
 ```
 
 > All template files are ready under `templates/`. No manual file creation needed.
@@ -680,7 +680,7 @@ ai-coding-agent-harness/
 
 ```powershell
 git clone https://github.com/KOKURI12/ai-coding-agent-harness.git
-cd common-harness
+cd ai-coding-agent-harness
 ```
 
 > `templates/` 下已包含所有模板文件，无需手动创建。
