@@ -43,7 +43,7 @@ AI Agent を使っていると、こんな問題が起きませんか？
 ## 🗂️ ディレクトリ構成
 
 ```txt
-Common_harness/
+ai-coding-agent-harness/
 ├─ README.md
 ├─ CHANGELOG.md
 ├─ LICENSE
@@ -81,7 +81,7 @@ Common_harness/
 ### STEP 1：クローン
 
 ```powershell
-git clone https://github.com/KOKURI12/Common_harness.git
+git clone https://github.com/KOKURI12/ai-coding-agent-harness.git
 cd common-harness
 ```
 
@@ -291,7 +291,7 @@ GitHub のブランチ保護も設定しましょう：`main` への直接 push 
 
 ## 🤝 コントリビュート
 
-Issue・PR 歓迎です → [Issues](https://github.com/KOKURI12/Common_harness/issues)
+Issue・PR 歓迎です → [Issues](https://github.com/KOKURI12/ai-coding-agent-harness/issues)
 
 Mac / Linux 向け bash スクリプト / テンプレート改善 / 翻訳追加
 
@@ -342,7 +342,7 @@ Sound familiar?
 ## 🗂️ Directory Structure
 
 ```txt
-Common_harness/
+ai-coding-agent-harness/
 ├─ README.md
 ├─ CHANGELOG.md
 ├─ LICENSE
@@ -380,7 +380,7 @@ Common_harness/
 ### STEP 1: Clone
 
 ```powershell
-git clone https://github.com/KOKURI12/Common_harness.git
+git clone https://github.com/KOKURI12/ai-coding-agent-harness.git
 cd common-harness
 ```
 
@@ -590,7 +590,7 @@ Also set GitHub branch protection: block direct push to `main` / require PR revi
 
 ## 🤝 Contributing
 
-Issues and PRs welcome → [Issues](https://github.com/KOKURI12/Common_harness/issues)
+Issues and PRs welcome → [Issues](https://github.com/KOKURI12/ai-coding-agent-harness/issues)
 
 Bash scripts for Mac/Linux / Template improvements / Additional translations
 
@@ -641,7 +641,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 ## 🗂️ 目录结构
 
 ```txt
-Common_harness/
+ai-coding-agent-harness/
 ├─ README.md
 ├─ CHANGELOG.md
 ├─ LICENSE
@@ -679,7 +679,7 @@ Common_harness/
 ### STEP 1：克隆
 
 ```powershell
-git clone https://github.com/KOKURI12/Common_harness.git
+git clone https://github.com/KOKURI12/ai-coding-agent-harness.git
 cd common-harness
 ```
 
@@ -889,7 +889,7 @@ Get-ChildItem -Recurse -File -Force |
 
 ## 🤝 贡献指南
 
-欢迎提交 Issue 和 PR → [Issues](https://github.com/KOKURI12/Common_harness/issues)
+欢迎提交 Issue 和 PR → [Issues](https://github.com/KOKURI12/ai-coding-agent-harness/issues)
 
 Mac / Linux bash 脚本 / 模板改进 / 更多语言翻译
 
