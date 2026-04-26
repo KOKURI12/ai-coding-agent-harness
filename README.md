@@ -8,7 +8,7 @@
 
 # 🛠️ Common Harness（日本語）
 
-> AI Agent（Claude Code / Cursor）を複数の開発プロジェクトで安全・効率的に使うための、共通テンプレート集です。
+> AI Agent（Claude Code / Cursor）を複数プロジェクトで安全に使うための共通テンプレート集です。
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Platform: Windows](https://img.shields.io/badge/Platform-Windows%20%28PowerShell%29-blue)
@@ -21,24 +21,22 @@
 
 ## 📌 概要
 
-`Common Harness` は、Claude Code / Cursor / AI Agent で複数の開発プロジェクトを扱うための共通テンプレート集です。
+AI Agent を使っていると、こんな問題が起きませんか？
 
-**こんな課題を解決します：**
+- プロジェクトのたびに AI Agent へのルールを書き直している
+- AI Agent が勝手にファイルを削除・変更してしまった
+- `.env` や AWS キーを GitHub に push してしまいそうで不安
+- 本番環境を AI Agent に誤操作されたくない
 
-- プロジェクトごとに AI Agent のルールを毎回書き直している
-- AI Agent が勝手にファイルを削除・変更して困った経験がある
-- `.env` や AWS キーを誤って Git に push してしまいそうで不安
-- 本番 / ステージング / 開発 の環境を AI Agent に誤操作されたくない
-
-**このリポジトリが提供するもの：**
+**Common Harness はこれらをまとめて解決するテンプレート集です。**
 
 | 提供物 | 内容 |
 |---|---|
-| AI Agent ルールテンプレート | 禁止操作・確認義務・作業手順を統一 |
-| Claude Code 設定テンプレート | 権限・スコープを最小化した安全な設定 |
-| Cursor ルールテンプレート | プロジェクトルールをすぐ適用できる雛形 |
-| インストールスクリプト | 各プロジェクトへ Harness を自動配置 |
-| 秘密情報チェック | push 前のリークスキャンコマンド |
+| AI Agent ルールテンプレート | 禁止操作・確認ルール・作業手順を統一 |
+| Claude Code 設定テンプレート | 安全な権限設定をすぐに使える |
+| Cursor ルールテンプレート | Cursor 用のプロジェクトルール雛形 |
+| インストールスクリプト | 各プロジェクトへワンコマンドで配置 |
+| 秘密情報チェック | push 前のリークスキャン |
 
 ---
 
@@ -51,11 +49,11 @@ Common_harness/
 ├─ LICENSE
 ├─ .gitignore
 ├─ templates/
-│  ├─ AGENTS.md
-│  ├─ CLAUDE.md
-│  ├─ PROJECT_CONTEXT.md
+│  ├─ AGENTS.md              # AI Agent 共通ルール
+│  ├─ CLAUDE.md              # Claude Code 専用ルール
+│  ├─ PROJECT_CONTEXT.md     # プロジェクト固有情報
 │  ├─ .claude/
-│  │  └─ settings.json
+│  │  └─ settings.json       # Claude Code 権限設定
 │  ├─ .cursorignore
 │  └─ .cursor/
 │     └─ rules/
@@ -68,226 +66,58 @@ Common_harness/
 
 ## 🚀 クイックスタート
 
-### 前提条件
+### 必要なもの
 
-| 要件 | バージョン |
+| 要件 | 備考 |
 |---|---|
-| OS | Windows 10 / 11 |
-| PowerShell | 5.1 以上（推奨：7.x） |
+| Windows 10 / 11 | Mac / Linux は未対応（コントリビュート歓迎） |
+| PowerShell 5.1 以上 | 推奨：7.x |
 | Claude Code | 最新版 |
-| Cursor | 最新版（任意） |
-| Git | 任意（GitHub 連携する場合） |
-| GitHub CLI (`gh`) | 任意（リポジトリ作成する場合） |
+| Cursor | 任意 |
+| Git / GitHub CLI | GitHub 連携する場合 |
 
-> ⚠️ 現在 **Windows / PowerShell 専用**です。Mac / Linux 向け bash スクリプトは未対応です（コントリビュート歓迎）。
+---
 
-### STEP 1：このリポジトリをクローン
+### STEP 1：クローン
 
 ```powershell
 git clone https://github.com/<YOUR_USERNAME>/common-harness.git
 cd common-harness
 ```
 
-クローン後は `templates/` 配下にすべてのテンプレートファイルが揃っています。**ファイルを手動で作成する必要はありません。**
+> `templates/` に全ファイルが揃っています。手動でファイルを作成する必要はありません。
 
-### STEP 2：各プロジェクトへ Harness を配置
+---
+
+### STEP 2：プロジェクトへ配置
 
 ```powershell
-# 基本配置（AGENTS.md / CLAUDE.md / .claude/settings.json / .cursorignore をコピー）
+# 基本配置（これだけで OK）
 powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project
+  -TargetProjectPath C:\your-workspace\your-project
 
-# Cursor rules も配置する場合
+# Cursor rules も一緒に配置したい場合
 powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project `
-  -InstallCursorRules
+  -TargetProjectPath C:\your-workspace\your-project -InstallCursorRules
 
-# 共通 skills も配置する場合
+# 共通 skills も配置したい場合
 powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project `
-  -InstallSkills
-
-# PROJECT_CONTEXT.md を強制上書きする場合
-powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project `
-  -OverwriteProjectContext
+  -TargetProjectPath C:\your-workspace\your-project -InstallSkills
 ```
 
-### STEP 3：PROJECT_CONTEXT.md を編集する
-
-配置後、対象プロジェクト内の `PROJECT_CONTEXT.md` を開き、プロジェクト名・技術スタック・コマンド・AWS 構成などを記入してください。
+> `PROJECT_CONTEXT.md` は既存ファイルがあればスキップします。強制上書きは `-OverwriteProjectContext` を付けてください。
 
 ---
 
-## 📄 各テンプレートの内容ガイド
+### STEP 3：PROJECT_CONTEXT.md を編集
 
-### AGENTS.md（AI Agent 共通ルール）
-
-```markdown
-## 回答ルール
-- 回答・説明は日本語で行うこと
-- 依頼内容に必要な最小限の修正だけを行うこと
-
-## セキュリティルール
-- .env / *.pem / *.key / AWS 認証情報は読まない・変更しない
-
-## 禁止操作（事前確認なしに実行しないこと）
-- npm install / pip install 等の依存追加
-- DB の削除・DROP / git push / rm -rf
-- 本番環境（prd）へのデプロイ
-
-## 推奨作業フロー
-1. PROJECT_CONTEXT.md を確認する
-2. 変更方針をユーザーに説明する
-3. 承認後に最小限の修正を行う
-4. 確認コマンドを実行して結果を報告する
-```
-
-### CLAUDE.md（Claude Code 専用ルール）
-
-```markdown
-## 最初に確認するファイル
-1. AGENTS.md → 2. PROJECT_CONTEXT.md → 3. エントリーポイント → 4. 関連ソース
-
-## Claude Code 作業ルール
-- 変更前に作業計画を提示すること
-- 新規依存パッケージは必ず事前確認すること
-
-## AWS 関連の注意
-- DynamoDB / Lambda / IAM / デプロイ設定は事前確認なしに変更しない
-
-## 作業完了時の報告形式
-- 変更したファイル / 変更内容 / 変更理由 / 確認コマンドと結果 / 懸念点
-```
-
-### PROJECT_CONTEXT.md（プロジェクト固有情報）
-
-```markdown
-## プロジェクト名 / 目的 / 技術スタック
-## 環境情報
-  | 環境 | 説明             | AI Agent の直接操作 |
-  | dev  | ローカル開発環境 | 許可                |
-  | stg  | ステージング環境 | 要確認              |
-  | prd  | 本番環境         | 禁止                |
-## コマンド / AWS 構成 / 注意事項
-```
-
-### .claude/settings.json（Claude Code 権限設定）
-
-```json
-{
-  "permissions": {
-    "allow": [
-      "Bash(npm run lint)", "Bash(npm run lint:fix)", "Bash(npm test)",
-      "Bash(npm run build)", "Bash(npm run dev)",
-      "Bash(git diff)", "Bash(git diff --staged)", "Bash(git status)",
-      "Bash(git log --oneline *)", "Bash(cat *)", "Bash(ls *)", "Bash(echo *)"
-    ],
-    "deny": [
-      "Read(.env)", "Read(.env.*)", "Read(secrets/**)", "Read(credentials/**)",
-      "Read(*.pem)", "Read(*.key)",
-      "Bash(rm -rf *)", "Bash(git push *)", "Bash(git reset --hard *)",
-      "Bash(git clean -fd *)", "Bash(aws dynamodb delete-table *)",
-      "Bash(aws dynamodb update-table *)", "Bash(aws iam *)",
-      "Bash(aws s3 rb *)", "Bash(terraform destroy *)", "Bash(kubectl delete *)"
-    ]
-  }
-}
-```
+配置後、プロジェクト内の `PROJECT_CONTEXT.md` を開いてプロジェクト情報を記入してください。
 
 ---
 
-## ⚙️ install-harness.ps1 動作仕様
+### STEP 4：AI Agent に読み込ませる
 
-| 処理対象 | デフォルト動作 | オプション |
-|---|---|---|
-| `AGENTS.md` | 常に上書きコピー | — |
-| `CLAUDE.md` | 常に上書きコピー | — |
-| `.claude/settings.json` | 常に上書きコピー | — |
-| `.cursorignore` | 常に上書きコピー | — |
-| `PROJECT_CONTEXT.md` | **初回のみ（既存はスキップ）** | `-OverwriteProjectContext` で強制上書き |
-| `.cursor/rules/project-rule.mdc` | スキップ | `-InstallCursorRules` で配置 |
-| `.claude/skills/` | スキップ | `-InstallSkills` で追加（同名スキップ） |
-
-> ⚠️ `.claude/` フォルダ全体は上書きしません。`settings.json` のみをコピーし、既存の `.claude/skills/` を保護します。
-
-**冪等性：** 何度実行しても安全です（PROJECT_CONTEXT.md を除く）。  
-**エラー時：** 失敗したファイルをスキップして処理を継続します。
-
----
-
-## 🔄 テンプレート更新時の対応
-
-| ファイル | 反映方法 |
-|---|---|
-| `AGENTS.md` / `CLAUDE.md` / `settings.json` / `.cursorignore` | `install-harness.ps1` を再実行（自動上書き） |
-| `PROJECT_CONTEXT.md` | 各プロジェクトを手動編集 |
-| `.cursor/rules/project-rule.mdc` | `-InstallCursorRules` を付けて再実行 |
-
----
-
-## 🏭 本番プロジェクトでの追加推奨事項
-
-**環境別の権限分離：**
-
-```json
-"deny": [
-  "Bash(aws * --profile prd*)",
-  "Bash(kubectl * --context prd*)",
-  "Bash(terraform apply * -var-file=prd*)"
-]
-```
-
-**pre-commit hook による自動スキャン：**
-
-```powershell
-$secretPattern = 'AKIA[0-9A-Z]{16}|aws_secret_access_key\s*=|aws_access_key_id\s*=|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|ghp_[A-Za-z0-9_]{36}|xox[baprs]-[A-Za-z0-9-]+'
-$found = Get-ChildItem -Recurse -File -Force |
-  Where-Object { $_.FullName -notmatch '\\\.git\\' } |
-  Select-String -Pattern $secretPattern
-if ($found) {
-  Write-Host "❌ 秘密情報が検出されました。コミットを中断します。" -ForegroundColor Red
-  $found | ForEach-Object { Write-Host $_.Filename }
-  exit 1
-}
-```
-
-**ブランチ保護ルール（GitHub）：** `main` への直接 push 禁止 / PR レビュー必須 / ステータスチェック必須
-
----
-
-## 🔐 GitHub にアップロードしてはいけないもの
-
-`.env` / `.env.*` / `*.pem` / `*.key` / `secrets/` / `credentials/`  
-AWS キー / GitHub Token(`ghp_`) / Slack Token(`xox`) / DB パスワード / API Key
-
----
-
-## 🔍 push 前の秘密情報チェック
-
-```powershell
-$secretPattern = 'AKIA[0-9A-Z]{16}|aws_secret_access_key\s*=|aws_access_key_id\s*=|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|ghp_[A-Za-z0-9_]{36}|xox[baprs]-[A-Za-z0-9-]+'
-Get-ChildItem -Recurse -File -Force |
-  Where-Object { $_.FullName -notmatch '\\\.git\\' } |
-  Select-String -Pattern $secretPattern
-```
-
----
-
-## 📦 GitHub へのアップロード手順
-
-```powershell
-git init -b main
-git add .
-git commit -m "feat: add common AI harness templates"
-gh auth login
-gh repo create common-harness --public --source=. --remote=origin
-git push -u origin main
-```
-
----
-
-## 🤖 AI Agent への初回指示
+Claude Code / Cursor を起動したら、最初にこの指示を送ってください：
 
 ```txt
 まず AGENTS.md、CLAUDE.md、PROJECT_CONTEXT.md を順番に読んで、
@@ -298,10 +128,172 @@ git push -u origin main
 
 ---
 
+## 📄 テンプレート内容ガイド
+
+### AGENTS.md（AI Agent 共通ルール）
+
+AI Agent が守るべき基本ルールを定義します。
+
+- 回答は日本語で、最小限の修正のみ行う
+- `.env` / `*.pem` / `*.key` / AWS 認証情報は読まない・変更しない
+- `npm install` / `git push` / `rm -rf` / 本番デプロイは事前確認が必要
+- 作業前に計画を説明し、承認後に実施する
+
+---
+
+### CLAUDE.md（Claude Code 専用ルール）
+
+Claude Code 固有の動作を制御します。
+
+- 作業開始時は `AGENTS.md` → `PROJECT_CONTEXT.md` → ソースの順に確認する
+- 変更前に作業計画を提示する
+- DynamoDB / Lambda / IAM などの AWS リソースは事前確認なしに変更しない
+- 作業完了後は変更内容・実行コマンド・懸念点をまとめて報告する
+
+---
+
+### PROJECT_CONTEXT.md（プロジェクト固有情報）
+
+このファイルだけプロジェクトごとに編集します。記載内容：
+
+- プロジェクト名・目的
+- 技術スタック（言語・DB・インフラ）
+- 環境情報（dev / stg / prd）と AI Agent の操作可否
+- 起動・ビルド・テストコマンド
+- AWS 構成・注意事項
+
+---
+
+### .claude/settings.json（Claude Code 権限設定）
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run lint:fix)",
+      "Bash(npm test)",
+      "Bash(npm run build)",
+      "Bash(npm run dev)",
+      "Bash(git diff)",
+      "Bash(git diff --staged)",
+      "Bash(git status)",
+      "Bash(git log --oneline *)",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(tail *)"
+    ],
+    "ask": [
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(rm -f *)",
+      "Bash(chmod *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(aws *)",
+      "Bash(terraform *)",
+      "Bash(kubectl *)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(secrets/**)",
+      "Read(credentials/**)",
+      "Read(*.pem)",
+      "Read(*.key)",
+      "Bash(cat .env*)",
+      "Bash(cat *.pem)",
+      "Bash(cat *.key)",
+      "Bash(head .env*)",
+      "Bash(tail .env*)",
+      "Bash(grep * .env*)",
+      "Bash(grep -r * .)",
+      "Bash(rm -rf *)",
+      "Bash(git push *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -fd *)",
+      "Bash(aws dynamodb delete-table *)",
+      "Bash(aws dynamodb update-table *)",
+      "Bash(aws iam *)",
+      "Bash(aws s3 rb *)",
+      "Bash(aws s3 rm *)",
+      "Bash(terraform destroy *)",
+      "Bash(kubectl delete *)",
+      "Bash(kubectl exec *)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(chmod 777 *)",
+      "Bash(sudo *)",
+      "Bash(find * -delete *)",
+      "Bash(find * -exec *)"
+    ]
+  }
+}
+```
+
+> **権限の考え方：** `allow`（確認なし）→ `ask`（実行前に確認）→ `deny`（ブロック）の順で評価されます。プロジェクトの技術スタックに合わせて `allow` を調整してください。
+
+---
+
+## ⚙️ install-harness.ps1 の動作
+
+| 対象ファイル | 動作 | オプション |
+|---|---|---|
+| `AGENTS.md` | 常に上書き | — |
+| `CLAUDE.md` | 常に上書き | — |
+| `.claude/settings.json` | 常に上書き | — |
+| `.cursorignore` | 常に上書き | — |
+| `PROJECT_CONTEXT.md` | 初回のみ（既存はスキップ） | `-OverwriteProjectContext` で強制上書き |
+| `.cursor/rules/project-rule.mdc` | スキップ | `-InstallCursorRules` で配置 |
+| `.claude/skills/` | スキップ | `-InstallSkills` で追加（同名スキップ） |
+
+> 何度実行しても安全です（`PROJECT_CONTEXT.md` を除く）。
+
+---
+
+## 🔐 GitHub に絶対に含めてはいけないもの
+
+```
+.env  /  .env.*  /  *.pem  /  *.key  /  secrets/  /  credentials/
+AWS キー  /  GitHub Token (ghp_)  /  Slack Token (xox)  /  DB パスワード
+```
+
+push 前に必ずチェックしてください：
+
+```powershell
+$secretPattern = 'AKIA[0-9A-Z]{16}|aws_secret_access_key\s*=|aws_access_key_id\s*=|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|ghp_[A-Za-z0-9_]{36}|xox[baprs]-[A-Za-z0-9-]+'
+Get-ChildItem -Recurse -File -Force |
+  Where-Object { $_.FullName -notmatch '\\\.git\\' } |
+  Select-String -Pattern $secretPattern
+```
+
+何も表示されなければ OK です。
+
+---
+
+## 🏭 本番プロジェクトで使う場合
+
+`settings.json` の `deny` に本番環境への操作を追加してください：
+
+```json
+"Bash(aws * --profile prd*)",
+"Bash(kubectl * --context prd*)",
+"Bash(terraform apply * -var-file=prd*)"
+```
+
+GitHub のブランチ保護も設定しましょう：`main` への直接 push 禁止 / PR レビュー必須
+
+---
+
 ## 🤝 コントリビュート
 
-Issue や PR は歓迎です！ → [Issues](https://github.com/<YOUR_USERNAME>/common-harness/issues)  
-Mac / Linux 向け bash スクリプト追加 / テンプレート改善 / 多言語対応
+Issue・PR 歓迎です → [Issues](https://github.com/<YOUR_USERNAME>/common-harness/issues)
+
+Mac / Linux 向け bash スクリプト / テンプレート改善 / 翻訳追加
 
 ## 📝 ライセンス
 
@@ -319,7 +311,7 @@ Mac / Linux 向け bash スクリプト追加 / テンプレート改善 / 多�
 
 # 🛠️ Common Harness (English)
 
-> A shared template collection for safely and efficiently managing multiple development projects with AI Agents (Claude Code / Cursor).
+> A shared template collection for safely using AI Agents (Claude Code / Cursor) across multiple projects.
 
 > **Language / 言語 / 语言：**
 > [日本語](#-日本語) · **[English](#-english)** · [中文](#-中文)
@@ -328,24 +320,22 @@ Mac / Linux 向け bash スクリプト追加 / テンプレート改善 / 多�
 
 ## 📌 Overview
 
-`Common Harness` is a shared template collection for working with Claude Code / Cursor / AI Agents across multiple development projects.
+Sound familiar?
 
-**Problems it solves:**
-
-- Rewriting AI Agent rules from scratch for every project
+- Rewriting AI Agent rules for every new project
 - AI Agents unexpectedly deleting or modifying files
-- Accidentally pushing `.env` files or AWS keys to GitHub
-- AI Agents mistakenly operating on production / staging environments
+- Worried about pushing `.env` or AWS keys to GitHub
+- Don't want AI Agents touching your production environment
 
-**What this repository provides:**
+**Common Harness solves all of this with a ready-to-use template set.**
 
 | Item | Description |
 |---|---|
-| AI Agent rule templates | Standardize prohibited operations, confirmation requirements, and workflows |
-| Claude Code config template | Minimal-permission settings to reduce risk |
+| AI Agent rule templates | Standardize rules, restrictions, and workflows |
+| Claude Code config | Safe permission settings out of the box |
 | Cursor rule template | Ready-to-use project rules for Cursor |
-| Install script | Automatically deploy Harness files to each project |
-| Secret leak checker | Commands to scan for secrets before pushing |
+| Install script | One command to deploy to any project |
+| Secret leak checker | Scan for secrets before pushing |
 
 ---
 
@@ -358,11 +348,11 @@ Common_harness/
 ├─ LICENSE
 ├─ .gitignore
 ├─ templates/
-│  ├─ AGENTS.md
-│  ├─ CLAUDE.md
-│  ├─ PROJECT_CONTEXT.md
+│  ├─ AGENTS.md              # Common AI Agent rules
+│  ├─ CLAUDE.md              # Claude Code-specific rules
+│  ├─ PROJECT_CONTEXT.md     # Per-project context
 │  ├─ .claude/
-│  │  └─ settings.json
+│  │  └─ settings.json       # Claude Code permissions
 │  ├─ .cursorignore
 │  └─ .cursor/
 │     └─ rules/
@@ -375,166 +365,58 @@ Common_harness/
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Requirements
 
-| Requirement | Version |
+| Requirement | Notes |
 |---|---|
-| OS | Windows 10 / 11 |
-| PowerShell | 5.1 or later (7.x recommended) |
+| Windows 10 / 11 | Mac / Linux not yet supported (contributions welcome) |
+| PowerShell 5.1+ | 7.x recommended |
 | Claude Code | Latest |
-| Cursor | Latest (optional) |
-| Git | Optional (for GitHub integration) |
-| GitHub CLI (`gh`) | Optional (for repo creation) |
+| Cursor | Optional |
+| Git / GitHub CLI | For GitHub integration |
 
-> ⚠️ Currently **Windows / PowerShell only**. Bash scripts for Mac / Linux are not yet available (contributions welcome).
+---
 
-### STEP 1: Clone this repository
+### STEP 1: Clone
 
 ```powershell
 git clone https://github.com/<YOUR_USERNAME>/common-harness.git
 cd common-harness
 ```
 
-All template files are already present under `templates/` after cloning. **No need to create files manually.**
+> All template files are ready under `templates/`. No manual file creation needed.
 
-### STEP 2: Deploy Harness to your project
+---
+
+### STEP 2: Deploy to your project
 
 ```powershell
-# Basic deploy
+# Basic deploy (recommended starting point)
 powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project
+  -TargetProjectPath C:\your-workspace\your-project
 
-# Also install Cursor rules
+# Also deploy Cursor rules
 powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project -InstallCursorRules
+  -TargetProjectPath C:\your-workspace\your-project -InstallCursorRules
 
-# Also install shared skills
+# Also deploy shared skills
 powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project -InstallSkills
-
-# Force overwrite PROJECT_CONTEXT.md
-powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project -OverwriteProjectContext
+  -TargetProjectPath C:\your-workspace\your-project -InstallSkills
 ```
+
+> `PROJECT_CONTEXT.md` is skipped if it already exists. Use `-OverwriteProjectContext` to force overwrite.
+
+---
 
 ### STEP 3: Edit PROJECT_CONTEXT.md
 
-Open `PROJECT_CONTEXT.md` in the target project and fill in the project name, tech stack, commands, AWS configuration, etc.
+Open `PROJECT_CONTEXT.md` in your project and fill in your project details.
 
 ---
 
-## 📄 Template Contents Guide
+### STEP 4: Load into your AI Agent
 
-### AGENTS.md
-
-```markdown
-## Response Rules
-- Always respond and explain in Japanese
-- Make only the minimum changes required
-
-## Security Rules
-- Never read, output, or modify .env / *.pem / *.key / AWS credentials
-
-## Prohibited Operations (require user confirmation)
-- Adding dependencies / DB deletion / git push / rm -rf
-- Deploying to production (prd)
-
-## Recommended Workflow
-1. Read PROJECT_CONTEXT.md
-2. Explain the plan to the user
-3. Implement minimum changes after approval
-4. Run verification commands and report results
-```
-
-### CLAUDE.md
-
-```markdown
-## Files to Check First
-1. AGENTS.md → 2. PROJECT_CONTEXT.md → 3. Entry point → 4. Related source
-
-## Work Rules
-- Present a work plan before making changes
-- Always confirm before adding new dependencies
-
-## AWS Precautions
-- Do not modify DynamoDB / Lambda / IAM / deploy configs without confirmation
-```
-
-### .claude/settings.json
-
-```json
-{
-  "permissions": {
-    "allow": [
-      "Bash(npm run lint)", "Bash(npm run lint:fix)", "Bash(npm test)",
-      "Bash(npm run build)", "Bash(npm run dev)",
-      "Bash(git diff)", "Bash(git diff --staged)", "Bash(git status)",
-      "Bash(git log --oneline *)", "Bash(cat *)", "Bash(ls *)", "Bash(echo *)"
-    ],
-    "deny": [
-      "Read(.env)", "Read(.env.*)", "Read(secrets/**)", "Read(credentials/**)",
-      "Read(*.pem)", "Read(*.key)",
-      "Bash(rm -rf *)", "Bash(git push *)", "Bash(git reset --hard *)",
-      "Bash(git clean -fd *)", "Bash(aws dynamodb delete-table *)",
-      "Bash(aws dynamodb update-table *)", "Bash(aws iam *)",
-      "Bash(aws s3 rb *)", "Bash(terraform destroy *)", "Bash(kubectl delete *)"
-    ]
-  }
-}
-```
-
----
-
-## ⚙️ install-harness.ps1 Behavior
-
-| Target | Default | Option |
-|---|---|---|
-| `AGENTS.md` | Always overwrite | — |
-| `CLAUDE.md` | Always overwrite | — |
-| `.claude/settings.json` | Always overwrite | — |
-| `.cursorignore` | Always overwrite | — |
-| `PROJECT_CONTEXT.md` | **First-time only (skip if exists)** | `-OverwriteProjectContext` |
-| `.cursor/rules/project-rule.mdc` | Skip | `-InstallCursorRules` |
-| `.claude/skills/` | Skip | `-InstallSkills` (skip on conflict) |
-
-**Idempotent:** Safe to run multiple times (except PROJECT_CONTEXT.md).
-
----
-
-## 🏭 Production Project Recommendations
-
-**Permission isolation:**
-```json
-"deny": [
-  "Bash(aws * --profile prd*)",
-  "Bash(kubectl * --context prd*)",
-  "Bash(terraform apply * -var-file=prd*)"
-]
-```
-
-**Branch protection (GitHub):** Prohibit direct push to `main` / Require PR review / Require status checks.
-
----
-
-## 🔐 Never Push to GitHub
-
-`.env` / `.env.*` / `*.pem` / `*.key` / `secrets/` / `credentials/`  
-AWS keys / GitHub Token (`ghp_`) / Slack Token (`xox`) / DB passwords / API Keys
-
----
-
-## 🔍 Pre-Push Secret Check
-
-```powershell
-$secretPattern = 'AKIA[0-9A-Z]{16}|aws_secret_access_key\s*=|aws_access_key_id\s*=|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|ghp_[A-Za-z0-9_]{36}|xox[baprs]-[A-Za-z0-9-]+'
-Get-ChildItem -Recurse -File -Force |
-  Where-Object { $_.FullName -notmatch '\\\.git\\' } |
-  Select-String -Pattern $secretPattern
-```
-
----
-
-## 🤖 Initial Prompt for AI Agents
+When starting Claude Code / Cursor, send this first:
 
 ```txt
 Please read AGENTS.md, CLAUDE.md, and PROJECT_CONTEXT.md in order.
@@ -545,9 +427,171 @@ Do not modify files, create files, or run any commands yet.
 
 ---
 
+## 📄 Template Guide
+
+### AGENTS.md (Common AI Agent Rules)
+
+Defines the rules all AI Agents must follow:
+
+- Respond in Japanese; make only minimum necessary changes
+- Never read or modify `.env` / `*.pem` / `*.key` / AWS credentials
+- Always confirm before: `npm install` / `git push` / `rm -rf` / production deploy
+- Explain the plan before acting, implement only after approval
+
+---
+
+### CLAUDE.md (Claude Code-Specific Rules)
+
+Controls Claude Code behavior:
+
+- On start: read `AGENTS.md` → `PROJECT_CONTEXT.md` → source files
+- Always present a work plan before making changes
+- Never modify DynamoDB / Lambda / IAM / deploy configs without confirmation
+- Report changed files, reasons, commands run, and any concerns after completing work
+
+---
+
+### PROJECT_CONTEXT.md (Per-Project Context)
+
+The only file you edit per project. Include:
+
+- Project name and purpose
+- Tech stack (language, DB, infrastructure)
+- Environments (dev / stg / prd) and AI Agent access rules
+- Start / build / test commands
+- AWS architecture and notes
+
+---
+
+### .claude/settings.json (Claude Code Permissions)
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run lint:fix)",
+      "Bash(npm test)",
+      "Bash(npm run build)",
+      "Bash(npm run dev)",
+      "Bash(git diff)",
+      "Bash(git diff --staged)",
+      "Bash(git status)",
+      "Bash(git log --oneline *)",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(tail *)"
+    ],
+    "ask": [
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(rm -f *)",
+      "Bash(chmod *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(aws *)",
+      "Bash(terraform *)",
+      "Bash(kubectl *)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(secrets/**)",
+      "Read(credentials/**)",
+      "Read(*.pem)",
+      "Read(*.key)",
+      "Bash(cat .env*)",
+      "Bash(cat *.pem)",
+      "Bash(cat *.key)",
+      "Bash(head .env*)",
+      "Bash(tail .env*)",
+      "Bash(grep * .env*)",
+      "Bash(grep -r * .)",
+      "Bash(rm -rf *)",
+      "Bash(git push *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -fd *)",
+      "Bash(aws dynamodb delete-table *)",
+      "Bash(aws dynamodb update-table *)",
+      "Bash(aws iam *)",
+      "Bash(aws s3 rb *)",
+      "Bash(aws s3 rm *)",
+      "Bash(terraform destroy *)",
+      "Bash(kubectl delete *)",
+      "Bash(kubectl exec *)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(chmod 777 *)",
+      "Bash(sudo *)",
+      "Bash(find * -delete *)",
+      "Bash(find * -exec *)"
+    ]
+  }
+}
+```
+
+> **How permissions work:** evaluated in order — `deny` → `ask` → `allow`. First match wins. Adjust `allow` to fit your project's tech stack.
+
+---
+
+## ⚙️ install-harness.ps1 Behavior
+
+| File | Behavior | Option |
+|---|---|---|
+| `AGENTS.md` | Always overwrite | — |
+| `CLAUDE.md` | Always overwrite | — |
+| `.claude/settings.json` | Always overwrite | — |
+| `.cursorignore` | Always overwrite | — |
+| `PROJECT_CONTEXT.md` | First-time only (skip if exists) | `-OverwriteProjectContext` |
+| `.cursor/rules/project-rule.mdc` | Skip | `-InstallCursorRules` |
+| `.claude/skills/` | Skip | `-InstallSkills` (skip on conflict) |
+
+> Safe to run multiple times (except `PROJECT_CONTEXT.md`).
+
+---
+
+## 🔐 Never Push These to GitHub
+
+```
+.env  /  .env.*  /  *.pem  /  *.key  /  secrets/  /  credentials/
+AWS keys  /  GitHub Token (ghp_)  /  Slack Token (xox)  /  DB passwords
+```
+
+Always check before pushing:
+
+```powershell
+$secretPattern = 'AKIA[0-9A-Z]{16}|aws_secret_access_key\s*=|aws_access_key_id\s*=|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|ghp_[A-Za-z0-9_]{36}|xox[baprs]-[A-Za-z0-9-]+'
+Get-ChildItem -Recurse -File -Force |
+  Where-Object { $_.FullName -notmatch '\\\.git\\' } |
+  Select-String -Pattern $secretPattern
+```
+
+No output = you're clear.
+
+---
+
+## 🏭 For Production Projects
+
+Add these to `deny` in `settings.json`:
+
+```json
+"Bash(aws * --profile prd*)",
+"Bash(kubectl * --context prd*)",
+"Bash(terraform apply * -var-file=prd*)"
+```
+
+Also set GitHub branch protection: block direct push to `main` / require PR review.
+
+---
+
 ## 🤝 Contributing
 
-Issues and PRs welcome! → [Issues](https://github.com/<YOUR_USERNAME>/common-harness/issues)  
+Issues and PRs welcome → [Issues](https://github.com/<YOUR_USERNAME>/common-harness/issues)
+
 Bash scripts for Mac/Linux / Template improvements / Additional translations
 
 ## 📝 License
@@ -566,7 +610,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 # 🛠️ Common Harness（中文）
 
-> 面向多个开发项目的 AI Agent（Claude Code / Cursor）安全高效管理的通用模板集合。
+> 面向多个开发项目的 AI Agent（Claude Code / Cursor）安全管理通用模板集合。
 
 > **语言 / Language / 言語：**
 > [日本語](#-日本語) · [English](#-english) · **[中文](#-中文)**
@@ -575,24 +619,22 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## 📌 概述
 
-`Common Harness` 是一套通用模板集合，用于在多个开发项目中统一管理 Claude Code / Cursor / AI Agent 的行为规则。
-
-**解决的问题：**
+你是否遇到过这些问题？
 
 - 每个项目都要重新编写 AI Agent 规则
-- AI Agent 擅自删除或修改文件
+- AI Agent 擅自删除或修改了文件
 - 担心不小心将 `.env` 或 AWS 密钥 push 到 GitHub
-- 不希望 AI Agent 误操作生产 / 预发布 / 开发环境
+- 不希望 AI Agent 误操作生产环境
 
-**本仓库提供：**
+**Common Harness 用一套模板集合解决以上所有问题。**
 
 | 内容 | 说明 |
 |---|---|
-| AI Agent 规则模板 | 统一禁止操作、确认义务及工作流程 |
-| Claude Code 配置模板 | 最小权限设置，降低操作风险 |
-| Cursor 规则模板 | 可直接使用的项目规则雏形 |
-| 安装脚本 | 自动将 Harness 文件部署到各项目 |
-| 密钥泄露检查 | push 前的机密信息扫描命令 |
+| AI Agent 规则模板 | 统一禁止操作、确认规则及工作流程 |
+| Claude Code 配置模板 | 开箱即用的安全权限设置 |
+| Cursor 规则模板 | Cursor 项目规则雏形 |
+| 安装脚本 | 一条命令部署到任意项目 |
+| 密钥泄露检查 | push 前扫描机密信息 |
 
 ---
 
@@ -605,11 +647,11 @@ Common_harness/
 ├─ LICENSE
 ├─ .gitignore
 ├─ templates/
-│  ├─ AGENTS.md
-│  ├─ CLAUDE.md
-│  ├─ PROJECT_CONTEXT.md
+│  ├─ AGENTS.md              # AI Agent 通用规则
+│  ├─ CLAUDE.md              # Claude Code 专用规则
+│  ├─ PROJECT_CONTEXT.md     # 项目专属信息
 │  ├─ .claude/
-│  │  └─ settings.json
+│  │  └─ settings.json       # Claude Code 权限配置
 │  ├─ .cursorignore
 │  └─ .cursor/
 │     └─ rules/
@@ -622,155 +664,203 @@ Common_harness/
 
 ## 🚀 快速开始
 
-### 前提条件
+### 环境要求
 
-| 要求 | 版本 |
+| 要求 | 备注 |
 |---|---|
-| 操作系统 | Windows 10 / 11 |
-| PowerShell | 5.1 以上（推荐 7.x） |
+| Windows 10 / 11 | 暂不支持 Mac / Linux（欢迎贡献） |
+| PowerShell 5.1 以上 | 推荐 7.x |
 | Claude Code | 最新版 |
-| Cursor | 最新版（可选） |
-| Git | 可选（用于 GitHub 集成） |
-| GitHub CLI (`gh`) | 可选（用于创建仓库） |
+| Cursor | 可选 |
+| Git / GitHub CLI | 用于 GitHub 集成 |
 
-> ⚠️ 目前仅支持 **Windows / PowerShell**。Mac / Linux 的 bash 脚本尚未提供（欢迎贡献）。
+---
 
-### STEP 1：克隆本仓库
+### STEP 1：克隆
 
 ```powershell
 git clone https://github.com/<YOUR_USERNAME>/common-harness.git
 cd common-harness
 ```
 
-克隆完成后，`templates/` 目录下已包含所有模板文件。**无需手动创建文件。**
-
-### STEP 2：将 Harness 部署到项目
-
-```powershell
-# 基础部署
-powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project
-
-# 同时部署 Cursor 规则
-powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project -InstallCursorRules
-
-# 同时部署共享 skills
-powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project -InstallSkills
-
-# 强制覆盖 PROJECT_CONTEXT.md
-powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
-  -TargetProjectPath <YOUR_WORKSPACE>\your-project -OverwriteProjectContext
-```
-
-### STEP 3：编辑 PROJECT_CONTEXT.md
-
-部署完成后，打开目标项目中的 `PROJECT_CONTEXT.md`，填写项目名称、技术栈、命令、AWS 架构等信息。
+> `templates/` 下已包含所有模板文件，无需手动创建。
 
 ---
 
-## 📄 各模板内容说明
+### STEP 2：部署到项目
 
-### AGENTS.md
+```powershell
+# 基础部署（推荐从这里开始）
+powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
+  -TargetProjectPath C:\your-workspace\your-project
 
-```markdown
-## 回答规则
-- 回答与说明使用日语
-- 仅做请求范围内的最小限度修改
+# 同时部署 Cursor 规则
+powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
+  -TargetProjectPath C:\your-workspace\your-project -InstallCursorRules
 
-## 安全规则
-- 禁止读取、输出、修改 .env / *.pem / *.key / AWS 凭证
-
-## 禁止操作（需用户确认后方可执行）
-- 添加依赖 / 数据库删除 / git push / rm -rf
-- 向生产环境（prd）部署
-
-## 推荐工作流程
-1. 读取 PROJECT_CONTEXT.md
-2. 向用户说明变更方案
-3. 获得批准后执行最小限度修改
-4. 运行确认命令并汇报结果
+# 同时部署共享 skills
+powershell -ExecutionPolicy Bypass -File .\scripts\install-harness.ps1 `
+  -TargetProjectPath C:\your-workspace\your-project -InstallSkills
 ```
 
-### CLAUDE.md
+> `PROJECT_CONTEXT.md` 已存在时会自动跳过。强制覆盖请加 `-OverwriteProjectContext`。
 
-```markdown
-## 作业开始前需确认的文件
-1. AGENTS.md → 2. PROJECT_CONTEXT.md → 3. 入口文件 → 4. 相关源码
+---
 
-## 工作规则
+### STEP 3：编辑 PROJECT_CONTEXT.md
+
+打开项目中的 `PROJECT_CONTEXT.md`，填写项目信息。
+
+---
+
+### STEP 4：让 AI Agent 读取规则
+
+启动 Claude Code / Cursor 后，先发送以下指令：
+
+```txt
+请按顺序阅读 AGENTS.md、CLAUDE.md、PROJECT_CONTEXT.md，
+理解本项目的规则和结构。
+整理并汇报：技术栈、启动/构建/测试命令、不可操作的环境和文件。
+暂时不要修改代码、创建文件或执行任何命令。
+```
+
+---
+
+## 📄 模板内容说明
+
+### AGENTS.md（AI Agent 通用规则）
+
+定义所有 AI Agent 必须遵守的规则：
+
+- 使用日语回答，仅做最小限度修改
+- 禁止读取或修改 `.env` / `*.pem` / `*.key` / AWS 凭证
+- 以下操作需用户确认：`npm install` / `git push` / `rm -rf` / 生产环境部署
+- 执行前说明计划，获得批准后再实施
+
+---
+
+### CLAUDE.md（Claude Code 专用规则）
+
+控制 Claude Code 的专属行为：
+
+- 启动时按顺序读取：`AGENTS.md` → `PROJECT_CONTEXT.md` → 源码
 - 修改前先提交工作计划
-- 添加新依赖包必须事先确认
-
-## AWS 相关注意事项
 - 未经确认不得修改 DynamoDB / Lambda / IAM / 部署配置
-```
+- 作业完成后汇报：变更文件、原因、执行命令及结果、遗留问题
 
-### .claude/settings.json
+---
+
+### PROJECT_CONTEXT.md（项目专属信息）
+
+每个项目唯一需要编辑的文件，包含：
+
+- 项目名称与目的
+- 技术栈（语言、数据库、基础设施）
+- 环境信息（dev / stg / prd）及 AI Agent 操作权限
+- 启动 / 构建 / 测试命令
+- AWS 架构与注意事项
+
+---
+
+### .claude/settings.json（权限配置）
 
 ```json
 {
   "permissions": {
     "allow": [
-      "Bash(npm run lint)", "Bash(npm run lint:fix)", "Bash(npm test)",
-      "Bash(npm run build)", "Bash(npm run dev)",
-      "Bash(git diff)", "Bash(git diff --staged)", "Bash(git status)",
-      "Bash(git log --oneline *)", "Bash(cat *)", "Bash(ls *)", "Bash(echo *)"
+      "Bash(npm run lint)",
+      "Bash(npm run lint:fix)",
+      "Bash(npm test)",
+      "Bash(npm run build)",
+      "Bash(npm run dev)",
+      "Bash(git diff)",
+      "Bash(git diff --staged)",
+      "Bash(git status)",
+      "Bash(git log --oneline *)",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(tail *)"
+    ],
+    "ask": [
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(rm -f *)",
+      "Bash(chmod *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(aws *)",
+      "Bash(terraform *)",
+      "Bash(kubectl *)"
     ],
     "deny": [
-      "Read(.env)", "Read(.env.*)", "Read(secrets/**)", "Read(credentials/**)",
-      "Read(*.pem)", "Read(*.key)",
-      "Bash(rm -rf *)", "Bash(git push *)", "Bash(git reset --hard *)",
-      "Bash(git clean -fd *)", "Bash(aws dynamodb delete-table *)",
-      "Bash(aws dynamodb update-table *)", "Bash(aws iam *)",
-      "Bash(aws s3 rb *)", "Bash(terraform destroy *)", "Bash(kubectl delete *)"
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(secrets/**)",
+      "Read(credentials/**)",
+      "Read(*.pem)",
+      "Read(*.key)",
+      "Bash(cat .env*)",
+      "Bash(cat *.pem)",
+      "Bash(cat *.key)",
+      "Bash(head .env*)",
+      "Bash(tail .env*)",
+      "Bash(grep * .env*)",
+      "Bash(grep -r * .)",
+      "Bash(rm -rf *)",
+      "Bash(git push *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -fd *)",
+      "Bash(aws dynamodb delete-table *)",
+      "Bash(aws dynamodb update-table *)",
+      "Bash(aws iam *)",
+      "Bash(aws s3 rb *)",
+      "Bash(aws s3 rm *)",
+      "Bash(terraform destroy *)",
+      "Bash(kubectl delete *)",
+      "Bash(kubectl exec *)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(chmod 777 *)",
+      "Bash(sudo *)",
+      "Bash(find * -delete *)",
+      "Bash(find * -exec *)"
     ]
   }
 }
 ```
 
+> **权限评估顺序：** `deny` → `ask` → `allow`，第一个匹配规则生效。请根据项目技术栈调整 `allow` 列表。
+
 ---
 
 ## ⚙️ install-harness.ps1 行为说明
 
-| 处理对象 | 默认行为 | 可选参数 |
+| 文件 | 默认行为 | 可选参数 |
 |---|---|---|
-| `AGENTS.md` | 始终覆盖复制 | — |
-| `CLAUDE.md` | 始终覆盖复制 | — |
-| `.claude/settings.json` | 始终覆盖复制 | — |
-| `.cursorignore` | 始终覆盖复制 | — |
-| `PROJECT_CONTEXT.md` | **仅首次复制（已存在则跳过）** | `-OverwriteProjectContext` |
+| `AGENTS.md` | 始终覆盖 | — |
+| `CLAUDE.md` | 始终覆盖 | — |
+| `.claude/settings.json` | 始终覆盖 | — |
+| `.cursorignore` | 始终覆盖 | — |
+| `PROJECT_CONTEXT.md` | 仅首次（已存在则跳过） | `-OverwriteProjectContext` |
 | `.cursor/rules/project-rule.mdc` | 跳过 | `-InstallCursorRules` |
 | `.claude/skills/` | 跳过 | `-InstallSkills`（同名跳过） |
 
-**幂等性：** 可多次重复执行，均安全（PROJECT_CONTEXT.md 除外）。
-
----
-
-## 🏭 生产项目的额外推荐配置
-
-**权限隔离：**
-```json
-"deny": [
-  "Bash(aws * --profile prd*)",
-  "Bash(kubectl * --context prd*)",
-  "Bash(terraform apply * -var-file=prd*)"
-]
-```
-
-**分支保护规则（GitHub）：** 禁止直接向 `main` push / 要求 PR 审查 / 要求状态检查通过
+> 可多次重复执行，均安全（`PROJECT_CONTEXT.md` 除外）。
 
 ---
 
 ## 🔐 禁止上传到 GitHub 的内容
 
-`.env` / `.env.*` / `*.pem` / `*.key` / `secrets/` / `credentials/`  
-AWS 密钥 / GitHub Token（`ghp_`）/ Slack Token（`xox`）/ 数据库密码 / API Key
+```
+.env  /  .env.*  /  *.pem  /  *.key  /  secrets/  /  credentials/
+AWS 密钥  /  GitHub Token (ghp_)  /  Slack Token (xox)  /  数据库密码
+```
 
----
-
-## 🔍 push 前的机密信息检查
+push 前必须检查：
 
 ```powershell
 $secretPattern = 'AKIA[0-9A-Z]{16}|aws_secret_access_key\s*=|aws_access_key_id\s*=|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|ghp_[A-Za-z0-9_]{36}|xox[baprs]-[A-Za-z0-9-]+'
@@ -779,21 +869,28 @@ Get-ChildItem -Recurse -File -Force |
   Select-String -Pattern $secretPattern
 ```
 
+无输出即可安全 push。
+
 ---
 
-## 🤖 AI Agent 初始提示词
+## 🏭 生产项目的额外配置
 
-```txt
-请按顺序阅读 AGENTS.md、CLAUDE.md、PROJECT_CONTEXT.md。
-整理并汇报：技术栈、启动/构建/测试命令、不可操作的环境和文件。
-暂时不要修改代码、创建文件或执行任何命令。
+在 `settings.json` 的 `deny` 中追加：
+
+```json
+"Bash(aws * --profile prd*)",
+"Bash(kubectl * --context prd*)",
+"Bash(terraform apply * -var-file=prd*)"
 ```
+
+同时建议开启 GitHub 分支保护：禁止直接 push 到 `main` / 要求 PR 审查。
 
 ---
 
 ## 🤝 贡献指南
 
-欢迎提交 Issue 和 PR！→ [Issues](https://github.com/<YOUR_USERNAME>/common-harness/issues)  
+欢迎提交 Issue 和 PR → [Issues](https://github.com/<YOUR_USERNAME>/common-harness/issues)
+
 Mac / Linux bash 脚本 / 模板改进 / 更多语言翻译
 
 ## 📝 许可证
